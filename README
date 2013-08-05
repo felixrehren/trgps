@@ -1,0 +1,24 @@
+# Transposition Groups
+## a GAP package
+
+This package provides some basic functionality
+for transposition groups in GAP.
+It is open-source and available for forking on Github.
+Extensions and improvements are welcome.
+
+A _transposition group_
+is a pair (G,D),
+where G is a group and D is a subset of G
+consisting of involutions
+such that D is normal in G
+and D generates G.
+This extends Fischer's famous notion of 3-transposition groups.
+
+Installation of the package is as easy as saving a copy of the package
+in your package directory;
+in my case, this is `~/.gap/pkg/`.
+To start the package in GAP,
+simply type `LoadPackage("trgps");`.
+To create a transposition group object in GAP,
+use the command `TranspositionGroup(G,D)`,
+where you have previously assigned G and D.

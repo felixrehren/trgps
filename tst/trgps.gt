@@ -1,0 +1,51 @@
+gap> LoadPackage("trgps",false);;
+gap> IsInvolution((1,2)(3,4));
+true
+gap> IsInvolution(());
+false
+gap> IsOrderAtMost((1,2,3),5);
+true
+gap> CartWoDiag@trgps([1,2],[2,1]);
+[ [ 1, 2 ], [ 1, 2 ] ]
+gap> H := SymmetricGroup(4);;
+gap> S := TranspositionGroup( H, (1,2)^H );;
+gap> G := SymmetricGroup(5);;
+gap> T := TranspositionGroup( G, (1,2)^G );;
+gap> Length(Pairs(T));
+2
+gap> TranspositionDegree(T);
+3
+gap> CanBeNTrgp( PGL(2,9), 4 );
+false
+gap> CanBeNTrgp( PGL(2,9), 5 );
+true
+gap> Length( GroupToNTrgps( SymmetricGroup(6), 6 ) );
+4
+gap> Length( GroupToNTrgps( H, 6, true ) );
+1
+gap> IsMinimalTrgp( T );
+true
+gap> T = OnTrgps( T, (1,2)(4,5) );
+true
+gap> AutomorphismGroup(T) = AutomorphismGroup(G);
+true
+gap> Length(TrgpSearch( 8, 4 ));
+2
+gap> IsomorphismClassesTrgps( S, T );
+[  ]
+gap> Length(EmbeddingsClassesTrgps( S, T ));
+1
+gap> Length(MaximalSubgroupsTrgp( S ));
+2
+gap> Length(MaximalSubtrposTrgp( TranspositionGroup( H, Union((1,2)^H,(1,2)(3,4)^H) ) ));
+1
+gap> Subtrgp( T, Group( (1,2,3,4,5) ) );
+fail
+gap> IsIdentityMat(IncidencePairs( T ));
+true
+gap> G := DihedralGroup(10);;
+gap> Length(Dihedrals(TranspositionGroup(G,G.1^G)));
+1
+gap> A := AlternatingGroup(5);;
+gap> MinimalDihfusController(TranspositionGroup(A,(1,2)(3,4)^A));
+[  ]
