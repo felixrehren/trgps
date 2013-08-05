@@ -20,10 +20,13 @@ DeclareAttribute("Pairs",IsTrgp);
 DeclareOperation("TranspositionDegree",[IsTrgp]);
 
 DeclareOperation("IsInvolution",[IsMultiplicativeElementWithOne]);
-DeclareOperation("IsOrderAtMost",[IsMultiplicativeElementWithOne,IsPosInt]);
-DeclareOperation("CanBeNTrgp",[IsGroup,IsPosInt]);
-DeclareOperation("GroupToNTrgps",[IsGroup,IsPosInt,IsBool]);
-DeclareOperation("GroupToNTrgps",[IsGroup,IsPosInt]);
+DeclareOperation("IsOrderIn@",[IsMultiplicativeElementWithOne,IsList]);
+DeclareOperation("CanBeTrgp",[IsGroup,IsList]);
+DeclareOperation("CanBeTrgp",[IsGroup,IsPosInt]);
+DeclareOperation("GroupToTrgps",[IsGroup,IsList,IsBool]);
+DeclareOperation("GroupToTrgps",[IsGroup,IsList]);
+DeclareOperation("GroupToTrgps",[IsGroup,IsPosInt,IsBool]);
+DeclareOperation("GroupToTrgps",[IsGroup,IsPosInt]);
 DeclareOperation("IsMinimalTrgp",[IsTrgp]);
 DeclareOperation("OnTrgps",[IsTrgp,IsMultiplicativeElement]);
 DeclareAttribute("AutomorphismGroup",IsTrgp);

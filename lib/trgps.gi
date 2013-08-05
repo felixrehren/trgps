@@ -61,7 +61,7 @@ InstallMethod( CartWoDiag@,
 			Add(r,Set([A[i],B[j]])); fi; od; od;
 	return r;
 	end
-);
+	);
 InstallMethod( Pairs,
 	[IsTrgp],
 	function( T )
@@ -75,7 +75,7 @@ InstallMethod( Pairs,
 		Representative);
 	return Pairs(T);
 	end
-);
+	);
 InstallMethod( TranspositionDegree,
 	[IsTrgp],
 	T -> Maximum(List(Pairs(T),p->Order(Product(p))))
@@ -86,15 +86,15 @@ InstallMethod( IsInvolution,
 	g -> IsOne(g^2)
 	and not IsOne(g)
 	);
-InstallMethod( IsOrderAtMost,
-	[IsMultiplicativeElementWithOne,IsPosInt],
+InstallMethod( IsOrderIn@,
+	[IsMultiplicativeElementWithOne,IsList],
 	function( g, N )
-	return ForAny( [1..N], n-> IsOne(g^n) ); end
+	return ForAny( N, n-> IsOne(g^n) ); end
 	);
-InstallMethod( CanBeNTrgp,
-	[IsGroup,IsPosInt],
+InstallMethod( CanBeTrgp,
+	[IsGroup,IsList],
 	function( G, N )
-  local C, cc, mat, PairsOrderAtMostN, plant, seeds, L, i, j, l;
+  local C, cc, mat, PairsOrderIn, plant, seeds, L, i, j, l;
 	C := CommutatorFactorGroup(G);
 	if not ((Size(C) mod 2 = 0) and IsElementaryAbelian(C))
 		then return false; fi;
@@ -102,10 +102,10 @@ InstallMethod( CanBeNTrgp,
 		c -> IsInvolution(Representative(c)) );
 	if G <> Subgroup(G,Concatenation(List(cc,AsList))) then return false; fi;
 	mat := List([1..Length(cc)],i->[]);
-	PairsOrderAtMostN := function( S,T, N )
-		return ForAll( Cartesian(S,T),st->IsOrderAtMost(Product(st),N) ); end;
+	PairsOrderIn := function( S,T, N )
+		return ForAll( Cartesian(S,T),st->IsOrderIn@(Product(st),N) ); end;
 	for i in [1..Length(cc)] do for j in [i..Length(cc)] do
-		mat[i][j] := PairsOrderAtMostN(AsList(cc[i]),AsList(cc[j]),N);
+		mat[i][j] := PairsOrderIn(AsList(cc[i]),AsList(cc[j]),N);
 		mat[j][i] := mat[i][j]; od; od;
 	plant := Filtered([1..Length(cc)],i->ForAll(mat[i],IdFunc));
 	if G = Subgroup(G,Concatenation(List(cc{plant},AsList)))
@@ -127,8 +127,13 @@ InstallMethod( CanBeNTrgp,
 	return false;
 	end
 	);
-InstallMethod( GroupToNTrgps,
-	[IsGroup,IsPosInt,IsBool],
+	InstallMethod( CanBeTrgp,
+	[IsGroup,IsPosInt],
+	function( G, N )
+	return CanBeTrgp( G, [2..N] ); end
+	);
+InstallMethod( GroupToTrgps,
+	[IsGroup,IsList,IsBool],
 	function( G, N, minlOnly )
   local cc, pairs, gph, okCC, cliques, newc, S, OnCC, OnCliq, Transpositions, i, j, k, c;
 	cc := Filtered(
@@ -145,7 +150,7 @@ InstallMethod( GroupToNTrgps,
 				o -> o[1] );
 			pairs[j][i] := pairs[i][j];
 			gph[i][j] := ForAll( pairs[i][j],
-				p -> IsOrderAtMost(Product(p),N) );
+				p -> IsOrderIn@(Product(p),N) );
 			gph[j][i] := gph[i][j];
 	od; od;
 	okCC:= List(
@@ -204,10 +209,22 @@ InstallMethod( GroupToNTrgps,
 		end );
 	end
 	);
-InstallMethod( GroupToNTrgps,
+	InstallMethod( GroupToTrgps,
+	[IsGroup,IsPosInt,IsBool],
+	function( G, N, minlOnly )
+	return GroupToTrgps( G, [2..N], minlOnly );
+	end
+	);
+	InstallMethod( GroupToTrgps,
+	[IsGroup,IsList],
+	function( G, N )
+	return GroupToTrgps( G, N, false );
+	end
+	);
+	InstallMethod( GroupToTrgps,
 	[IsGroup,IsPosInt],
 	function( G, N )
-	return GroupToNTrgps( G, N, false );
+	return GroupToTrgps( G, N, false );
 	end
 	);
 InstallMethod( IsMinimalTrgp,
@@ -257,11 +274,11 @@ InstallMethod( TrgpSearch,
 				Print("#searching through the ",nn," gps",
 				" of size ",s," for ",N,"-trgps\n"); fi;
 			G := SmallGroup( s,n );
-			if CanBeNTrgp( G, N ) then
+			if CanBeTrgp( G, N ) then
 				Add(gg,[s,n]); fi;
 		od;
 	else
-		gg := IdsOfAllSmallGroups(Size,s,G -> CanBeNTrgp(G,N),true); fi;
+		gg := IdsOfAllSmallGroups(Size,s,G -> CanBeTrgp(G,N),true); fi;
 	return gg;
 	end
 	);
