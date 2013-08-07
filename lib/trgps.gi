@@ -563,7 +563,7 @@ InstallMethod( MinimalFusionController,
 	local res, M;
 	res := [];
 	for M in MaximalSubgroupClassReps(H) do
-		if ControlsDihedralFusion( Dl, M )
+		if ControlsFusion( Dl, M )
 		then Append(res,MinimalFusionController( Dl, M )); fi;
 	od;
 	if IsEmpty(res) then return [H];
