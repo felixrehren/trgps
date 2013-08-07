@@ -44,7 +44,7 @@ DeclareOperation("MaximalSubgroupsTrgp",[IsTrgp]);
 DeclareOperation("MaximalSubtrposTrgp",[IsTrgp]);
 DeclareOperation("Subtrgp",[IsTrgp,IsGroup]);
 DeclareOperation("ImageX",[IsMapping,IsTrgp]);
-DeclareOperation("TrgpSmallerDegreeRep",[IsTrgp]);
+DeclareOperation("AsSmallerPermTrgp",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);
 

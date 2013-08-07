@@ -452,15 +452,19 @@ InstallMethod( Subtrgp,
 	);
 InstallMethod( ImageX,
 	[IsMapping,IsTrgp],
-	function( S, f )
+	function( f, S )
   return TranspositionGroup(
-		ImageX(f),
-		ImageX(f,Transpositions(S)) );
+		Image(f),
+		Image(f,Transpositions(S)) );
 	end
 	);
-InstallMethod( TrgpSmallerDegreeRep,
+InstallMethod( AsSmallerPermTrgp,
 	[IsTrgp],
-	S -> ImageX(SmallerDegreePermutationRepresentation(GroupX(S)),S)
+	function(T)
+		if IsPermGroup(GroupX(T))
+		then return ImageX(SmallerDegreePermutationRepresentation(GroupX(T)),T);
+		else return AsSmallerPermTrgp(ImageX(IsomorphismPermGroup(GroupX(T)),T));fi;
+	end
 );
 
 InstallMethod( IncidencePairs,
