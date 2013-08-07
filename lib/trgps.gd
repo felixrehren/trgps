@@ -11,6 +11,7 @@ TypeTrgp@ := NewType(FamilyTrgp@,IsTrgp and IsTrgpStdRep);
 
 DeclareOperation("TranspositionGroup",[IsGroup,IsCollection]);
 DeclareOperation("Trgp",[IsGroup,IsCollection]);
+DeclareOperation("TrgpNC",[IsGroup,IsCollection]);
 DeclareOperation("Transpositions",[IsTrgp]);
 DeclareOperation("GroupX",[IsTrgp]);
 DeclareOperation("StringTrpoClasses@",[IsTrgp]);
@@ -35,18 +36,21 @@ DeclareOperation("TrgpSearch",[IsPosInt,IsPosInt]);
 DeclareOperation("TrgpQuest",[IsList,IsPosInt,IsString]);
 DeclareOperation("ViaAtlas@",[IsString,IsList]);
 
+DeclareOperation("IsIsomOfTrgp",[IsTrgp,IsTrgp,IsMapping]);
+DeclareOperation("AreIsomorphicTrgp",[IsTrgp,IsTrgp]);
 DeclareOperation("IsomorphismClassesTrgps",[IsTrgp,IsTrgp]);
 DeclareOperation("EmbeddingsClassesTrgps",[IsTrgp,IsTrgp]);
 DeclareOperation("MaximalSubgroupsTrgp",[IsTrgp]);
 DeclareOperation("MaximalSubtrposTrgp",[IsTrgp]);
 DeclareOperation("Subtrgp",[IsTrgp,IsGroup]);
-DeclareOperation("ImageTrgp",[IsTrgp,IsMapping]);
+DeclareOperation("ImageX",[IsMapping,IsTrgp]);
 DeclareOperation("TrgpSmallerDegreeRep",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);
 
 DeclareAttribute("Dihedrals",IsTrgp);
-DeclareOperation("ControlsDihedralFusion",[IsCollection,IsGroup]);
+DeclareAttribute("Dihedrals",IsGroup);
+DeclareOperation("ControlsFusion",[IsCollection,IsGroup]);
 DeclareOperation("ControlsDihedralFusion",[IsTrgp,IsGroup]);
-DeclareOperation("MinimalDihfusController",[IsCollection,IsGroup]);
-DeclareOperation("MinimalDihfusController",[IsTrgp]);
+DeclareOperation("MinimalFusionController",[IsCollection,IsGroup]);
+DeclareAttribute("MinimalDihfusController",IsTrgp);
