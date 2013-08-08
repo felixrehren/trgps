@@ -3,17 +3,14 @@
 #  transposition groups declarations
 #
 
-FamilyTrgp@ := NewFamily("TranspositionGroupsFamily");
-DeclareCategory("IsTrgp",IsObject);
-DeclareRepresentation("IsTrgpStdRep",
-	IsComponentObjectRep and IsAttributeStoringRep,[]);
-TypeTrgp@ := NewType(FamilyTrgp@,IsTrgp and IsTrgpStdRep);
+DeclareOperation("DuplicateGroup",[IsGroup]);
+
+DeclareAttribute("Transpositions",IsGroup);
+DeclareSynonym("IsTrgp",HasTranspositions);
 
 DeclareOperation("TranspositionGroup",[IsGroup,IsCollection]);
-DeclareOperation("Trgp",[IsGroup,IsCollection]);
+DeclareSynonym("Trgp", TranspositionGroup);
 DeclareOperation("TrgpNC",[IsGroup,IsCollection]);
-DeclareOperation("Transpositions",[IsTrgp]);
-DeclareOperation("GroupX",[IsTrgp]);
 DeclareOperation("StringTrpoClasses@",[IsTrgp]);
 
 DeclareOperation("CartWoDiag@",[IsCollection,IsCollection]);
@@ -30,7 +27,6 @@ DeclareOperation("GroupToTrgps",[IsGroup,IsPosInt,IsBool]);
 DeclareOperation("GroupToTrgps",[IsGroup,IsPosInt]);
 DeclareOperation("IsMinimalTrgp",[IsTrgp]);
 DeclareOperation("OnTrgps",[IsTrgp,IsMultiplicativeElement]);
-DeclareAttribute("AutomorphismGroup",IsTrgp);
 
 DeclareOperation("TrgpSearch",[IsPosInt,IsPosInt]);
 DeclareOperation("TrgpQuest",[IsList,IsPosInt,IsString]);
@@ -48,7 +44,6 @@ DeclareOperation("AsSmallerPermTrgp",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);
 
-DeclareAttribute("Dihedrals",IsTrgp);
 DeclareAttribute("Dihedrals",IsGroup);
 DeclareOperation("ControlsFusion",[IsCollection,IsGroup]);
 DeclareOperation("ControlsDihedralFusion",[IsTrgp,IsGroup]);

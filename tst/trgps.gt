@@ -39,7 +39,7 @@ gap> Length(EmbeddingsClassesTrgps( S, T ));
 1
 gap> Length(MaximalSubgroupsTrgp( S ));
 2
-gap> Length(MaximalSubtrposTrgp( TranspositionGroup( H, Union((1,2)^H,(1,2)(3,4)^H) ) ));
+gap> Length(MaximalSubtrposTrgp( Trgp( H, Union((1,2)^H,(1,2)(3,4)^H) ) ));
 1
 gap> Subtrgp( T, Group( (1,2,3,4,5) ) );
 fail
@@ -49,5 +49,5 @@ gap> G := DihedralGroup(10);;
 gap> Length(Dihedrals(TranspositionGroup(G,G.1^G)));
 1
 gap> A := AlternatingGroup(5);;
-gap> MinimalDihfusController(TranspositionGroup(A,(1,2)(3,4)^A));
-[  ]
+gap> Length(MinimalDihfusController(TranspositionGroup(A,(1,2)(3,4)^A)));
+1

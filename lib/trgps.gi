@@ -2,65 +2,55 @@
 #
 #  transposition groups implementation
 #
+InstallMethod( DuplicateGroup,
+	[IsGroup],
+	function( G )
+	local H, ktP, x;
+	H := GroupByGenerators(GeneratorsOfGroup(G));
+	for x in List(KnownAttributesOfObject(G),EvalString)
+	do Setter(x)(H,x(G)); od;
+	ktP := KnownTruePropertiesOfObject(G);
+	for x in List(ktP,EvalString)
+	do Setter(x)(H,true); od;
+	for x in List(Difference(KnownPropertiesOfObject(G),ktP),EvalString)
+	do Setter(x)(H,false); od;
+	return H;
+	end
+);
 
 InstallMethod( TranspositionGroup,
 	[IsGroup,IsCollection],
 	function( G, D )
-	return Objectify(
-		TypeTrgp@,
-		rec( 
-			Group := G,
-			Transpositions := List(Orbits(G,D),Representative)
-	) );
-	end
-	);
-	InstallMethod( Trgp,
-	[IsGroup,IsCollection],
-	function( G, D )
-	return TranspositionGroup( G, D );
+	return TrgpNC(G,List(Orbits(G,D),Representative));
 	end
 	);
 	InstallMethod( TrgpNC,
 	[IsGroup,IsCollection],
 	function( G, D )
-	return Objectify(
-		TypeTrgp@,
-		rec( 
-			Group := G,
-			Transpositions := D
-	) );
+	local H;
+	H := DuplicateGroup(G);
+	ResetFilterObj( H, HasTranspositions );
+	SetTranspositions(H,D);
+	return H;
 	end
-	);
-InstallMethod( Transpositions,
-	[IsTrgp],
-	T -> T!.Transpositions
-	);
-InstallMethod( GroupX,
-	[IsTrgp],
-	T -> T!.Group
 	);
 InstallMethod( StringTrpoClasses@,
 	[IsTrgp],
 	function(T)
 	return JoinStringsWithSeparator(
-		List(Transpositions(T),t->Size(t^GroupX(T))),
-		"+");
+		List(Transpositions(T),t->OrbitLength(T,t)),"+");
 	end
 	);
-InstallMethod( ViewString, "view a trgp",
-	[IsTrgp],
-	function(x)
-	return Concatenation(
-		ViewString(GroupX(x)),
-		" with ",StringTrpoClasses@(x)," transpositions");
-	end
-	);
-InstallMethod( PrintString,
+InstallMethod( PrintString, "for a trgp",
 	[IsTrgp],
 	function( T )
+	local gptxt;
+	ResetFilterObj(T,IsTrgp);
+	gptxt := PrintString(T);
+	SetFilterObj(T,IsTrgp);
 	return Concatenation(
 		"TrgpNC(\n",
-		"\t",PrintString(GroupX(T)),",\n",
+		"\t",gptxt,",\n",
 		"\t",PrintString(Transpositions(T)),"\n",
 		")" );
 	end
@@ -69,9 +59,15 @@ InstallMethod( PrintString,
 InstallMethod( \=,
 	[IsTrgp,IsTrgp],
 	function( A, B )
-	return GroupX(A) = GroupX(B)
-		and ForAll(Transpositions(A),t->
-			ForAny(Transpositions(B),s->IsConjugate(GroupX(A),t,s)) );
+	ResetFilterObj(A,IsTrgp);
+	ResetFilterObj(B,IsTrgp);
+	if A <> B then return false;
+	else
+		SetFilterObj(A,IsTrgp);
+		SetFilterObj(B,IsTrgp);
+		return ForAll(Transpositions(A),t->
+			ForAny(Transpositions(B),s->IsConjugate(A,t,s)) );
+	fi;
 	end
 );
 
@@ -90,10 +86,10 @@ InstallMethod( Pairs,
 	[IsTrgp],
 	function( T )
   local tt;
-	tt := Union(List(Transpositions(T),t->AsList(t^GroupX(T))));
+	tt := Union(List(Transpositions(T),t->AsList(t^T)));
 	return List(
 		OrbitsDomain(
-			GroupX(T),
+			T,
 			CartWoDiag@( tt,tt ),
 			OnSets),
 		Representative);
@@ -257,7 +253,7 @@ InstallMethod( IsMinimalTrgp,
 	function(T)
 	local cc;
 	if Length(Transpositions(T)) = 1 then return true;
-	cc := List(Transpositions(T),t->t^GroupX(T));
+	cc := List(Transpositions(T),t->t^T);
 	else return ForAll(
 		Combinations(cc,Length(cc)-1),
 		c->Group(Union(c)) <> Group(Union(cc))
@@ -266,19 +262,21 @@ InstallMethod( IsMinimalTrgp,
 InstallMethod( OnTrgps,
 	[IsTrgp,IsMultiplicativeElement],
 	function( om, g )
-	return TranspositionGroup(
-		(GroupX(om))^g,
-		List(Transpositions(om),x->x^g) );
+	return TranspositionGroup( om^g, List(Transpositions(om),x->x^g) );
 	end
 	);
 InstallMethod( AutomorphismGroup,
 	[IsTrgp],
-	T ->
-	Subgroup(AutomorphismGroup(GroupX(T)),
-		Filtered(AutomorphismGroup(GroupX(T)),
-		a -> ForAll(Transpositions(T),
-		t->ForAny(Transpositions(T),s->IsConjugate(GroupX(T),t^a,s)) )
-	) )
+	function(T)
+	local tt, A;
+	tt := T!.Transpositions;
+	Unbind(T!.Transpositions);
+	ResetFilterObj(T,IsTrgp);
+	A := AutomorphismGroup(T);
+	SetTranspositions(T,tt);
+	return Subgroup(A, Filtered(A, a -> ForAll(Transpositions(T),
+		t->ForAny(Transpositions(T),s->IsConjugate(T,t^a,s)) )));
+	end
 );
 
 InstallMethod( TrgpSearch,
@@ -361,32 +359,33 @@ InstallMethod( ViaAtlas@,
 InstallMethod( IsIsomOfTrgp,
 	[IsTrgp,IsTrgp,IsMapping],
 	function(R,S,h)
-	if Size(GroupX(R)) <> Size(GroupX(S))
+	if R <> Source(h) or S <> Image(h)
+	or Size(R) <> Size(S)
 	or Length(Transpositions(R)) <> Length(Transpositions(S))
 	then return false;
-	else return IsSurjective(h) and
+	else return 
 		ForAll( Transpositions(R), t -> ForAny( Transpositions(S), u ->
-			IsConjugate(GroupX(S),ImageX(h,t),u)) );
+			IsConjugate(S,Image(h,t),u)) );
 	fi;
 	end
 	);
 InstallMethod( AreIsomorphicTrgp,
 	[IsTrgp,IsTrgp],
 	function( R, S )
-	if Size(GroupX(R)) <> Size(GroupX(S))
+	if Size(R) <> Size(S)
 	or Length(Transpositions(R)) <> Length(Transpositions(S))
 	then return false; fi;
-	return ForAny( AllHomomorphismClasses( GroupX(R), GroupX(S) ),
+	return ForAny( AllHomomorphismClasses( R, S ),
 		h -> IsIsomOfTrgp(R,S,h) );
 	end
 	);
 InstallMethod( IsomorphismClassesTrgps,
 	[IsTrgp,IsTrgp],
 	function( R, S )
-	if Size(GroupX(R)) <> Size(GroupX(S))
+	if Size(R) <> Size(S)
 	or Length(Transpositions(R)) <> Length(Transpositions(S))
 	then return []; fi;
-	return Filtered( AllHomomorphismClasses( GroupX(R), GroupX(S) ),
+	return Filtered( AllHomomorphismClasses( R, S ),
 		h -> IsIsomOfTrgp(R,S,h) );
 	end
 	);
@@ -394,13 +393,9 @@ InstallMethod( EmbeddingsClassesTrgps,
 	[IsTrgp,IsTrgp],
 	function( R, S )
 	return Filtered(
-		AllHomomorphismClasses( GroupX(R), GroupX(S) ),
+		AllHomomorphismClasses( R, S ),
 		h -> IsInjective(h)
-			and ForAll(
-				Transpositions(R), t ->
-				ForAny(
-					Transpositions(S), u ->
-					IsConjugate(GroupX(S),ImageX(h,t),u)) )
+			and IsIsomOfTrgp(R,TrgpNC(Image(h),Image(h,Transpositions(R))),h)
 		);
 	end
 	);
@@ -408,14 +403,14 @@ InstallMethod( MaximalSubgroupsTrgp,
 	[IsTrgp],
 	function( R )
   local cc, ms, i, j;
-	cc := Concatenation(List(Transpositions(R),t->AsList(t^GroupX(R))));
+	cc := Concatenation(List(Transpositions(R),t->AsList(t^R)));
 	ms := List(
-		MaximalSubgroupClassReps(GroupX(R)),
-		m -> Subgroup(GroupX(R),Intersection(m,cc)) );
+		MaximalSubgroupClassReps(R),
+		m -> Subgroup(R,Intersection(m,cc)) );
 	for i in [Length(ms),Length(ms)-1..1] do
 		if Size(ms[i]) < 3 then Remove(ms,i); continue; fi;
 		for j in [1..i-1] do
-			if IsConjugate(GroupX(R),ms[i],ms[j]) then
+			if IsConjugate(R,ms[i],ms[j]) then
 				Remove(ms,i); break; fi;
 	od; od;
 	return List(
@@ -435,10 +430,9 @@ InstallMethod( MaximalSubtrposTrgp,
 				Transpositions(R),
 				Length(Transpositions(R))-1
 			),
-			c -> GroupX(R) = 
-						Subgroup(GroupX(R),Concatenation(List(c,k->AsList(k^GroupX(R)))))
+			c -> R = Subgroup(R,Concatenation(List(c,k->AsList(k^R))))
 		),
-		c -> TranspositionGroup(GroupX(R),c)
+		c -> TranspositionGroup(R,c)
 	)
 	);
 InstallMethod( Subtrgp,
@@ -446,7 +440,7 @@ InstallMethod( Subtrgp,
 	function( T, H )
   local D;
 	D := Intersection(Transpositions(T),H);
-	if H <> Subgroup(GroupX(T),D) then return fail; fi;
+	if H <> Subgroup(T,D) then return fail; fi;
 	return TranspositionGroup(H,List(OrbitsDomain(H,D),o->o[1]));
 	end
 	);
@@ -461,9 +455,9 @@ InstallMethod( ImageX,
 InstallMethod( AsSmallerPermTrgp,
 	[IsTrgp],
 	function(T)
-		if IsPermGroup(GroupX(T))
-		then return ImageX(SmallerDegreePermutationRepresentation(GroupX(T)),T);
-		else return AsSmallerPermTrgp(ImageX(IsomorphismPermGroup(GroupX(T)),T));fi;
+		if IsPermGroup(T)
+		then return ImageX(SmallerDegreePermutationRepresentation(T),T);
+		else return AsSmallerPermTrgp(ImageX(IsomorphismPermGroup(T),T));fi;
 	end
 );
 
@@ -484,7 +478,7 @@ InstallMethod( IncidencePairs,
 	end;
 	for i in [1..l] do for j in [1..l] do
 		if L[i] <= L[j] and IsInt(L[j]/L[i])
-		and GivesSubAlg(GroupX(T),Pairs(T)[i],Pairs(T)[j])
+		and GivesSubAlg(T,Pairs(T)[i],Pairs(T)[j])
 		then silhm[i][j] := 1; fi;
 	od; od;
 
@@ -547,7 +541,7 @@ InstallMethod( IncidencePairs,
 InstallMethod( Dihedrals,
 	[IsTrgp],
 	T -> 
-	Set(List( Pairs(T),p -> Group(p)^GroupX(T) ))
+	Set(List( Pairs(T),p -> Group(p)^T ))
 	);
 InstallMethod( ControlsFusion,
 	[IsCollection,IsGroup],
@@ -576,5 +570,5 @@ InstallMethod( MinimalFusionController,
 	);
 	InstallMethod( MinimalDihfusController,
 	[IsTrgp],
-	T -> MinimalFusionController(Dihedrals(T),GroupX(T))
+	T -> MinimalFusionController(Dihedrals(T),T)
 );
