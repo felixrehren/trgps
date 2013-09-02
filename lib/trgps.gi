@@ -2,6 +2,7 @@
 #
 #  transposition groups implementation
 #
+
 InstallMethod( DuplicateGroup,
 	[IsGroup],
 	function( G )
@@ -30,7 +31,13 @@ InstallMethod( TranspositionGroup,
 	local H;
 	H := DuplicateGroup(G);
 	ResetFilterObj( H, HasTranspositions );
+	ResetFilterObj( H, HasPairs );
+	ResetFilterObj( H, HasIncidencePairs );
+	ResetFilterObj( H, HasDihedrals );
+	ResetFilterObj( H, HasMinimalDihfusController );
 	SetTranspositions(H,D);
+	ResetFilterObj( H, HasAutomorphismGroup );
+	Unbind( H!.AutomorphismGroup ); # forcibly remove
 	return H;
 	end
 	);
@@ -266,13 +273,16 @@ InstallMethod( OnTrgps,
 	end
 	);
 InstallMethod( AutomorphismGroup,
+	"for transposition groups",
 	[IsTrgp],
+	SUM_FLAGS,
 	function(T)
 	local tt, A;
 	tt := T!.Transpositions;
 	Unbind(T!.Transpositions);
 	ResetFilterObj(T,IsTrgp);
 	A := AutomorphismGroup(T);
+	ResetFilterObj(T,HasAutomorphismGroup);
 	SetTranspositions(T,tt);
 	return Subgroup(A, Filtered(A, a -> ForAll(Transpositions(T),
 		t->ForAny(Transpositions(T),s->IsConjugate(T,t^a,s)) )));
@@ -444,8 +454,8 @@ InstallMethod( Subtrgp,
 	return TranspositionGroup(H,List(OrbitsDomain(H,D),o->o[1]));
 	end
 	);
-InstallMethod( ImageX,
-	[IsMapping,IsTrgp],
+InstallMethod( ImagesSet,"for a transposition group",
+	[IsMapping,IsTrgp],SUM_FLAGS,
 	function( f, S )
   return TranspositionGroup(
 		Image(f),
@@ -456,8 +466,8 @@ InstallMethod( AsSmallerPermTrgp,
 	[IsTrgp],
 	function(T)
 		if IsPermGroup(T)
-		then return ImageX(SmallerDegreePermutationRepresentation(T),T);
-		else return AsSmallerPermTrgp(ImageX(IsomorphismPermGroup(T),T));fi;
+		then return Images(SmallerDegreePermutationRepresentation(T),T);
+		else return AsSmallerPermTrgp(Images(IsomorphismPermGroup(T),T));fi;
 	end
 );
 
