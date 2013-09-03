@@ -62,7 +62,6 @@ InstallMethod( PrintString, "for a trgp",
 		")" );
 	end
 	);
-
 InstallMethod( \=,
 	[IsTrgp,IsTrgp],
 	function( A, B )
@@ -231,7 +230,7 @@ InstallMethod( GroupToTrgps,
 		function(c) local T;
 		T := TranspositionGroup( G, List(cc{c},Representative) );
 		SetPairs(T,Concatenation(Concatenation(
-			List([1..Length(c)],i->List([1..Length(c)],
+			List([1..Length(c)],i->List([1..i],
 			j->pairs[c[i]][c[j]] )) )));
 		return T;
 		end );
