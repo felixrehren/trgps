@@ -159,9 +159,9 @@ InstallMethod( CanBeTrgp,
 	return CanBeTrgp( G, [2..N] ); end
 	);
 InstallMethod( GroupToTrgps,
-	[IsGroup,IsList,IsBool],
-	function( G, N, minlOnly )
-  local cc, pairs, gph, okCC, cliques, newc, S, OnCC, OnCliq, Transpositions, i, j, k, c;
+	[IsGroup,IsList],
+	function( G, N )
+  local cc, pairs, gph, okCC, cliques, newc, S, OnCC, OnCliq, Transpositions, i, j, minlOnly, k, c;
 	cc := Filtered(
 		ConjugacyClasses(G),
 		x -> IsInvolution(Representative(x)) );
@@ -193,6 +193,7 @@ InstallMethod( GroupToTrgps,
 			clique:=[k.class],
 			size:=k.size )
 		);
+	minlOnly := (ValueOption("minimal") = true);
 	for k in okCC do
 		for c in cliques do
 			if not (minlOnly and (c.size=Size(G)))
@@ -237,21 +238,9 @@ InstallMethod( GroupToTrgps,
 	end
 	);
 	InstallMethod( GroupToTrgps,
-	[IsGroup,IsPosInt,IsBool],
-	function( G, N, minlOnly )
-	return GroupToTrgps( G, [2..N], minlOnly );
-	end
-	);
-	InstallMethod( GroupToTrgps,
-	[IsGroup,IsList],
-	function( G, N )
-	return GroupToTrgps( G, N, false );
-	end
-	);
-	InstallMethod( GroupToTrgps,
 	[IsGroup,IsPosInt],
 	function( G, N )
-	return GroupToTrgps( G, N, false );
+	return GroupToTrgps( G, [2..N] );
 	end
 	);
 InstallMethod( IsMinimalTrgp,
