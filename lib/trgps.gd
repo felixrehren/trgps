@@ -7,6 +7,7 @@ DeclareOperation("DuplicateGroup",[IsGroup]);
 
 DeclareAttribute("Transpositions",IsGroup);
 DeclareSynonym("IsTrgp",HasTranspositions);
+DeclareOperation("Description",[IsTrgp]);
 
 DeclareOperation("TranspositionGroup",[IsGroup,IsCollection]);
 DeclareSynonym("Trgp", TranspositionGroup);
@@ -37,7 +38,6 @@ DeclareOperation("EmbeddingsClassesTrgps",[IsTrgp,IsTrgp]);
 DeclareOperation("MaximalSubgroupsTrgp",[IsTrgp]);
 DeclareOperation("MaximalSubtrposTrgp",[IsTrgp]);
 DeclareOperation("Subtrgp",[IsTrgp,IsGroup]);
-DeclareOperation("ImageX",[IsMapping,IsTrgp]);
 DeclareOperation("AsSmallerPermTrgp",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);

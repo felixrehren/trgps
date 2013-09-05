@@ -62,6 +62,21 @@ InstallMethod( PrintString, "for a trgp",
 		")" );
 	end
 	);
+InstallMethod( Description, "for a trgp",
+	[IsTrgp],
+	function( T )
+	return Concatenation(
+		StructureDescription(T:short),
+		" with ",
+		StringTrpoClasses@(T),
+		" transpos"
+	);
+	end
+	);
+	InstallMethod( ViewString, "for a trgp",
+	[IsTrgp],
+	Description
+	);
 InstallMethod( \=,
 	[IsTrgp,IsTrgp],
 	function( A, B )
