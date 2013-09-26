@@ -478,7 +478,7 @@ InstallMethod( AsSmallPermTrgp,
 	if IsPermGroup(T)
 	then 
 		S := Images(SmallerDegreePermutationRepresentation(T),T);
-		S!.Pairs := List(S!.Pairs,Set);
+		if IsBound(S!.Pairs) then S!.Pairs := List(S!.Pairs,Set); fi;
 		return S;
 	else return AsSmallPermTrgp(Images(IsomorphismPermGroup(T),T)); fi;
 	end
