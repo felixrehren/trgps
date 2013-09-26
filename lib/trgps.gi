@@ -258,6 +258,12 @@ InstallMethod( GroupToTrgps,
 	return GroupToTrgps( G, [2..N] );
 	end
 	);
+	InstallMethod( GroupToTrgps,
+	[IsGroup],
+	function( G )
+	return GroupToTrgps( G, [2..Size(G)] );
+	end
+	);
 InstallMethod( IsMinimalTrgp,
 	[IsTrgp],
 	function(T)
@@ -465,12 +471,16 @@ InstallMethod( ImagesSet,"for a transposition group",
 		Image(f,Transpositions(S)) );
 	end
 	);
-InstallMethod( AsSmallerPermTrgp,
+InstallMethod( AsSmallPermTrgp,
 	[IsTrgp],
 	function(T)
-		if IsPermGroup(T)
-		then return Images(SmallerDegreePermutationRepresentation(T),T);
-		else return AsSmallerPermTrgp(Images(IsomorphismPermGroup(T),T));fi;
+	local S;
+	if IsPermGroup(T)
+	then 
+		S := Images(SmallerDegreePermutationRepresentation(T),T);
+		S!.Pairs := List(S!.Pairs,Set);
+		return S;
+	else return AsSmallPermTrgp(Images(IsomorphismPermGroup(T),T)); fi;
 	end
 );
 

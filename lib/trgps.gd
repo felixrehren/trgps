@@ -22,6 +22,7 @@ DeclareOperation("IsInvolution",[IsMultiplicativeElementWithOne]);
 DeclareOperation("IsOrderIn@",[IsMultiplicativeElementWithOne,IsList]);
 DeclareOperation("CanBeTrgp",[IsGroup,IsList]);
 DeclareOperation("CanBeTrgp",[IsGroup,IsPosInt]);
+DeclareOperation("GroupToTrgps",[IsGroup]);
 DeclareOperation("GroupToTrgps",[IsGroup,IsList]);
 DeclareOperation("GroupToTrgps",[IsGroup,IsPosInt]);
 DeclareOperation("IsMinimalTrgp",[IsTrgp]);
@@ -38,7 +39,7 @@ DeclareOperation("EmbeddingsClassesTrgps",[IsTrgp,IsTrgp]);
 DeclareOperation("MaximalSubgroupsTrgp",[IsTrgp]);
 DeclareOperation("MaximalSubtrposTrgp",[IsTrgp]);
 DeclareOperation("Subtrgp",[IsTrgp,IsGroup]);
-DeclareOperation("AsSmallerPermTrgp",[IsTrgp]);
+DeclareOperation("AsSmallPermTrgp",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);
 
