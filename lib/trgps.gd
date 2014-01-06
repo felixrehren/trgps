@@ -20,6 +20,7 @@ DeclareOperation("TranspositionDegree",[IsTrgp]);
 
 DeclareOperation("IsInvolution",[IsMultiplicativeElementWithOne]);
 DeclareOperation("IsOrderIn@",[IsMultiplicativeElementWithOne,IsList]);
+DeclareOperation("CanBeTrgp",[IsGroup]);
 DeclareOperation("CanBeTrgp",[IsGroup,IsList]);
 DeclareOperation("CanBeTrgp",[IsGroup,IsPosInt]);
 DeclareOperation("GroupToTrgps",[IsGroup]);
@@ -42,6 +43,10 @@ DeclareOperation("Subtrgp",[IsTrgp,IsGroup]);
 DeclareOperation("AsSmallPermTrgp",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);
+
+DeclareOperation("CoxeterGroup",[IsMatrix]);
+#DeclareOperation("WeylGroup",[IsRootSystem]);
+#DeclareOperation("WeylGroup",[IsString,IsPosInt]);
 
 DeclareAttribute("Dihedrals",IsGroup);
 DeclareOperation("ControlsFusion",[IsCollection,IsGroup]);

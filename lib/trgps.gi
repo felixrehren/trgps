@@ -133,6 +133,18 @@ InstallMethod( IsOrderIn@,
 	return ForAny( N, n-> IsOne(g^n) ); end
 	);
 InstallMethod( CanBeTrgp,
+	[IsGroup],
+	function( G )
+	local C, cc;
+	C := CommutatorFactorGroup(G);
+	if not ((Size(C) mod 2 = 0) and IsElementaryAbelian(C))
+		then return false; fi;
+	cc := Filtered( ConjugacyClasses( G ),
+		c -> IsInvolution(Representative(c)) );
+	return G = Subgroup(G,Concatenation(List(cc,AsList)));
+	end
+	);
+	InstallMethod( CanBeTrgp,
 	[IsGroup,IsList],
 	function( G, N )
   local C, cc, mat, PairsOrderIn, plant, seeds, L, i, j, l;
@@ -559,6 +571,40 @@ InstallMethod( IncidencePairs,
 	Apply(silhm, s->Permuted(s,phi));
 	return silhm;
 	end
+);
+
+InstallMethod( CoxeterGroup,
+	[IsMatrix],
+	function( M )
+	local F, G;
+		F := FreeGroup(Length(M));
+		G := F / Concatenation(List([1..Length(M)],i->List([i..Length(M)],j->(F.(i)*F.(j))^M[i][j])));
+		return TranspositionGroup( G, List([1..Length(M)],i->G.(i)) );
+	end
+	);
+InstallOtherMethod( WeylGroup,
+	[IsRootSystem],
+	function( R )
+		local M, T;
+		M := CartanMatrix(R);
+		M := List([1..Length(M)],i->List([1..Length(M)],function(j)
+			if i = j then return 1;
+			elif M[i][j]*M[j][i] = 0 then return 2;
+			elif M[i][j]*M[j][i] = 1 then return 3;
+			elif M[i][j]*M[j][i] = 2 then return 4;
+			elif M[i][j]*M[j][i] = 3 then return 6;
+			else return 0;
+			fi; end
+		));
+		T := CoxeterGroup(M);
+		SetIsFinite(T,true);
+		return T;
+	end
+	);
+	InstallOtherMethod( WeylGroup,
+	[IsString,IsPosInt],
+	function( X, n )
+	return WeylGroup(RootSystem(SimpleLieAlgebra(X,n,Rationals))); end
 );
 
 InstallMethod( Dihedrals,
