@@ -572,6 +572,82 @@ InstallMethod( IncidencePairs,
 	return silhm;
 	end
 );
+InstallMethod( IncidenceGraph,
+	[IsTrgp],
+	T -> IncidenceGraph( IncidencePairs(T),
+		List(Pairs(T),p->String(Order(Product(p)))) )
+	);
+	InstallMethod( IncidenceGraph,
+	[IsMatrix, IsList],
+	function( mat, strs ) # relies on each node lying below at most 2 others
+  local lines, done, p, l, inc, pad, lengthen, q, qpr, m;
+	lines := [" "," "," "];
+	done := [];
+	p := 1;
+	l := Length(strs);
+	inc := ShallowCopy(mat);
+	pad := function(str,t)
+		while Length(str)>t do Remove(str); od;
+		while Length(str)<t do Append(str," "); od;
+		return str;
+	end;
+	lengthen := function(str,n)
+		local i;
+		for i in [1..n] do Append(str," "); od;
+		return str;
+	end;
+	while Length(done) < l do
+		q := First([p+1..l],q->inc[p][q] = 1 and inc[q][p] = 1);
+		if q <> fail then
+			strs[p] := Concatenation(strs[p],"-",strs[q]);
+			qpr := Difference([1..l],[q]);
+			strs := strs{qpr};
+			inc := inc{qpr}{qpr};
+			l := l-1;
+			continue;
+		fi;
+		q := First([p+1..l],i->IsOne(inc[p][i]));
+		if q = fail and Sum(inc,r -> r[p]) = 1 then # singletons
+			m := Maximum(List(lines,Length));
+			pad(lines[1],m+1);
+			pad(lines[2],m+1);
+			pad(lines[3],m+1);
+			lengthen(lines[1],Length(strs[p])+1);
+			Append(lines[2],strs[p]);
+			lengthen(lines[2],1);
+			lengthen(lines[3],Length(strs[p])+1);
+			Add(done,p);
+		elif Sum(inc[p]) = 2 then # subordinates pre-master
+			Append(lines[3],strs[p]);
+			pad(lines[1],Length(lines[3]));
+			pad(lines[2],Length(lines[3]));
+			Append(lines[2],"/");
+			Add(done,p);
+		elif Sum(inc[p]) = 1 then # maximals
+			Append(lines[1],strs[p]);
+			Add(done,p);
+			if IsSubset(Set(done),[1..p]) then
+				lengthen(lines[1],1);
+				pad(lines[2],Length(lines[1]));
+				pad(lines[3],Length(lines[1]));
+			fi;
+		elif q in done then # subordinates whose master has been done
+			pad(lines[2],Length(lines[1])-1);
+			pad(lines[3],Length(lines[1]));
+			Append(lines[3],strs[p]);
+			lengthen(lines[1],Length(strs[p]));
+			Append(lines[2],"\\");
+			lengthen(lines[2],Length(strs[p]));
+			Append(lines[2],"/");
+			Add(done,p);
+		else p := q; continue; fi; # do masters first
+		p := First([1..l],i->not i in done);
+	od;
+	if IsEmpty(lines[1]) then lines := lines[2];
+	else lines := JoinStringsWithSeparator(lines,"\n"); fi;
+	return lines;
+	end
+);
 
 InstallMethod( CoxeterGroup,
 	[IsMatrix],

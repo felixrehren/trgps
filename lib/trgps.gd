@@ -43,6 +43,8 @@ DeclareOperation("Subtrgp",[IsTrgp,IsGroup]);
 DeclareOperation("AsSmallPermTrgp",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);
+DeclareOperation("IncidenceGraph",[IsTrgp]);
+DeclareOperation("IncidenceGraph",[IsMatrix,IsList]);
 
 DeclareOperation("CoxeterGroup",[IsMatrix]);
 #DeclareOperation("WeylGroup",[IsRootSystem]);
