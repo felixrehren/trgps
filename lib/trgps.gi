@@ -470,7 +470,7 @@ InstallMethod( Subtrgp,
 	[IsTrgp, IsGroup],
 	function( T, H )
   local D;
-	D := Intersection(Concatenation(List(Transpositions(T),t->t^T)),H);
+	D := Intersection(Concatenation(List(Transpositions(T),t->AsList(t^T))),H);
 	if H <> Subgroup(T,D) then return fail; fi;
 	return TrgpNC(H,List(OrbitsDomain(H,D),Representative));
 	end
