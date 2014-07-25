@@ -16,7 +16,8 @@ DeclareOperation("StringTrpoClasses@",[IsTrgp]);
 
 DeclareOperation("CartWoDiag@",[IsCollection,IsCollection]);
 DeclareAttribute("Pairs",IsTrgp);
-DeclareOperation("TranspositionDegree",[IsTrgp]);
+DeclareAttribute("TranspositionDegree",IsTrgp);
+DeclareAttribute("Regularity",IsTrgp);
 
 DeclareOperation("IsInvolution",[IsMultiplicativeElementWithOne]);
 DeclareOperation("IsOrderIn@",[IsMultiplicativeElementWithOne,IsList]);
@@ -43,12 +44,15 @@ DeclareOperation("Subtrgp",[IsTrgp,IsGroup]);
 DeclareOperation("AsSmallPermTrgp",[IsTrgp]);
 
 DeclareAttribute("IncidencePairs",IsTrgp);
-DeclareOperation("IncidenceGraph",[IsTrgp]);
-DeclareOperation("IncidenceGraph",[IsMatrix,IsList]);
+DeclareOperation("PairsGraph",[IsTrgp]);
+DeclareOperation("PairsGraph",[IsMatrix,IsList]);
+
+DeclareOperation("NoncommGraph",[IsTrgp]);
+DeclareOperation("NoncommGraph",[IsList]);
 
 DeclareOperation("CoxeterGroup",[IsMatrix]);
-#DeclareOperation("WeylGroup",[IsRootSystem]);
-#DeclareOperation("WeylGroup",[IsString,IsPosInt]);
+DeclareOperation("CoxeterGroup",[IsRootSystem]);
+DeclareOperation("CoxeterGroup",[IsString,IsPosInt]);
 
 DeclareAttribute("Dihedrals",IsGroup);
 DeclareOperation("ControlsFusion",[IsCollection,IsGroup]);

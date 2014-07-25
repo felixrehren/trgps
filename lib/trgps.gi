@@ -119,7 +119,18 @@ InstallMethod( Pairs,
 	);
 InstallMethod( TranspositionDegree,
 	[IsTrgp],
-	T -> Maximum(List(Pairs(T),p->Order(Product(p))))
+	T ->
+	Maximum(List(Pairs(T),p->Order(Product(p))))
+	);
+InstallMethod( Regularity,
+	[IsTrgp],
+	function( T )
+	local l;
+	l := List(Transpositions(T), t->Sum(AsList(t^T),function(s)
+		if not IsOne(Comm(t,s)) then return 1; else return 0; fi; end));
+	if not Size(Set(l))=1 then return fail; fi;
+	return l[1];
+	end
 );
 
 InstallMethod( IsInvolution,
@@ -572,12 +583,12 @@ InstallMethod( IncidencePairs,
 	return silhm;
 	end
 );
-InstallMethod( IncidenceGraph,
+InstallMethod( PairsGraph,
 	[IsTrgp],
-	T -> IncidenceGraph( IncidencePairs(T),
+	T -> PairsGraph( IncidencePairs(T),
 		List(Pairs(T),p->String(Order(Product(p)))) )
 	);
-	InstallMethod( IncidenceGraph,
+	InstallMethod( PairsGraph,
 	[IsMatrix, IsList],
 	function( mat, strs ) # relies on each node lying below at most 2 others
   local lines, done, p, l, inc, pad, lengthen, q, qpr, m;
@@ -649,6 +660,18 @@ InstallMethod( IncidenceGraph,
 	end
 );
 
+InstallMethod( NoncommGraph,
+	[IsTrgp],
+	T -> NoncommGraph(Union(List(Transpositions(T),
+		t -> AsList(Orbit(T,t)))))
+	);
+	InstallMethod( NoncommGraph,
+	[IsList],
+	tt -> List(tt,t->List(tt,function(s)
+		if IsOne(Comm(t,s)) then return 0;
+		else return 1; fi; end))
+);
+
 InstallMethod( CoxeterGroup,
 	[IsMatrix],
 	function( M )
@@ -658,7 +681,7 @@ InstallMethod( CoxeterGroup,
 		return TranspositionGroup( G, List([1..Length(M)],i->G.(i)) );
 	end
 	);
-InstallOtherMethod( WeylGroup,
+InstallOtherMethod( CoxeterGroup,
 	[IsRootSystem],
 	function( R )
 		local M, T;
@@ -677,10 +700,10 @@ InstallOtherMethod( WeylGroup,
 		return T;
 	end
 	);
-	InstallOtherMethod( WeylGroup,
+	InstallOtherMethod( CoxeterGroup,
 	[IsString,IsPosInt],
 	function( X, n )
-	return WeylGroup(RootSystem(SimpleLieAlgebra(X,n,Rationals))); end
+	return CoxeterGroup(RootSystem(SimpleLieAlgebra(X,n,Rationals))); end
 );
 
 InstallMethod( Dihedrals,
